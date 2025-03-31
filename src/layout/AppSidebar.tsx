@@ -40,17 +40,30 @@ const AppSidebar: React.FC = () => {
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group  ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              } cursor-pointer ${
-                !isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "lg:justify-start"
-              }`}
+              aria-expanded={openSubmenu?.type === menuType && openSubmenu?.index === index}
+              aria-controls={`submenu-${menuType}-${index}`}
+              aria-haspopup="true"
+              className={`menu-item group ${
+                  openSubmenu?.type === menuType && openSubmenu?.index === index
+                    ? "menu-item-active"
+                    : "menu-item-inactive"
+                } cursor-pointer ${
+                  !isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "lg:justify-start"
+                }`}
+              // className={`menu-item group  ${
+              //   openSubmenu?.type === menuType && openSubmenu?.index === index
+              //     ? "menu-item-active"
+              //     : "menu-item-inactive"
+              // } cursor-pointer ${
+              //   !isExpanded && !isHovered
+              //     ? "lg:justify-center"
+              //     : "lg:justify-start"
+              // }`}
             >
               <span
+                aria-hidden="true"
                 className={` ${
                   openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? "menu-item-icon-active"
@@ -60,7 +73,8 @@ const AppSidebar: React.FC = () => {
                 {nav.icon}
               </span>
               {(isExpanded || isHovered || isMobileOpen) && (
-                <span className={`menu-item-text`}>{nav.name}</span>
+                <span className={`sr-only`}>{nav.name}</span>
+                // <span className={`menu-item-text`}>{nav.name}</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
@@ -76,12 +90,17 @@ const AppSidebar: React.FC = () => {
           ) : (
             nav.path && (
               <Link
-                href={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
+                  href={nav.path}
+                  aria-current={isActive(nav.path) ? "page" : undefined}
+                  className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                    }`}
+                // href={nav.path}
+                // className={`menu-item group ${
+                //   isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                // }`}
               >
                 <span
+                  aria-hidden="true"
                   className={`${
                     isActive(nav.path)
                       ? "menu-item-icon-active"
@@ -91,16 +110,22 @@ const AppSidebar: React.FC = () => {
                   {nav.icon}
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className={`menu-item-text`}>{nav.name}</span>
+                  <span className={`sr-only`}>{nav.name}</span>
+                  // <span className={`menu-item-text`}>{nav.name}</span>
                 )}
               </Link>
             )
           )}
           {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
             <div
-              ref={(el) => {
-                subMenuRefs.current[`${menuType}-${index}`] = el;
-              }}
+              // ref={(el) => {
+              //   subMenuRefs.current[`${menuType}-${index}`] = el;
+              // }}
+              // className="overflow-hidden transition-all duration-300"
+              id={`submenu-${menuType}-${index}`}
+              ref={(el) => { subMenuRefs.current[`${menuType}-${index}`] = el; }}
+              role="menu"
+              aria-hidden={!(openSubmenu?.type === menuType && openSubmenu?.index === index)}
               className="overflow-hidden transition-all duration-300"
               style={{
                 height:
@@ -113,12 +138,20 @@ const AppSidebar: React.FC = () => {
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
                     <Link
-                      href={subItem.path}
-                      className={`menu-dropdown-item ${
+                     href={subItem.path}
+                     role="menuitem"
+                     aria-current={isActive(subItem.path) ? "page" : undefined}
+                     className={`menu-dropdown-item ${
                         isActive(subItem.path)
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"
                       }`}
+                      // href={subItem.path}
+                      // className={`menu-dropdown-item ${
+                      //   isActive(subItem.path)
+                      //     ? "menu-dropdown-item-active"
+                      //     : "menu-dropdown-item-inactive"
+                      // }`}
                     >
                       {subItem.name}
                       <span className="flex items-center gap-1 ml-auto">
@@ -268,7 +301,11 @@ const AppSidebar: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Menu"
                 ) : (
-                  <HorizontaLDots />
+                    <>
+                      <span className="sr-only">Menu</span>
+                      <HorizontaLDots aria-hidden="true" />
+                    </>
+                  // <HorizontaLDots />
                 )}
               </h2>
               {renderMenuItems(navItems, "main")}

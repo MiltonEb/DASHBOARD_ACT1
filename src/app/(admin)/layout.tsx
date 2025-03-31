@@ -13,7 +13,7 @@ export default function AdminLayout({
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
-  // Dynamic class for main content margin based on sidebar state
+ 
   const mainContentMargin = isMobileOpen
     ? "ml-0"
     : isExpanded || isHovered
@@ -22,24 +22,42 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen xl:flex">
-      {/* Sidebar and Backdrop */}
-      <AppSidebar />
+      {/* Sidebar - Navigation Landmark */}
+      <nav 
+        aria-label="Main navigation"
+        className={isMobileOpen ? "fixed z-50" : ""}
+      >
+        <AppSidebar />
+      </nav>
+      
       <Backdrop />
+
       {/* Main Content Area */}
-      <div
-        className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
+      <div 
+        className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
       >
-        {/* Header */}
-        <AppHeader />
-        {/* Page Content */}
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+        {/* Header - Banner Landmark */}
+        <header role="banner">
+          <AppHeader />
+        </header>
+
+        {/* Page Content - Main Landmark */}
+        <main 
+          id="main-content"
+          tabIndex={-1}
+          className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6"
+        >
+          {children}
+        </main>
+
+        {/* Footer - Contentinfo Landmark */}
         <footer
-        className="col-span-2 bg-brand-500 text-white text-center p-4"
-        role="contentinfo"
-        aria-label="page footer"
-      >
-        <p>{" ©2025 Milton's Enterprise. All rights reserved."}</p>
-      </footer>
+          role="contentinfo"
+          aria-label="Page footer"
+          className="col-span-2 bg-brand-500 text-white text-center p-4"
+        >
+          <p>{" ©2025 Milton's Enterprise. All rights reserved."}</p>
+        </footer>
       </div>
     </div>
   );
